@@ -1,2 +1,2 @@
 # aes_SGX 
-aes encrypt an decrypt
+aes encrypt and decrypt
