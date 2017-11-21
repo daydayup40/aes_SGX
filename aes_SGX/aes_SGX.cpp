@@ -45,25 +45,7 @@ For AES192/256 the key size is proportionally larger.
 /* Defines:                                                                  */
 /*****************************************************************************/
 // The number of columns comprising a state in AES. This is a constant in AES. Value=4
-#define Nb 4
-#define BLOCKLEN 16 //Block length in bytes AES is 128b block only
 
-#if defined(AES256) && (AES256 == 1)
-#define Nk 8
-#define KEYLEN 32
-#define Nr 14
-#define keyExpSize 240
-#elif defined(AES192) && (AES192 == 1)
-#define Nk 6
-#define KEYLEN 24
-#define Nr 12
-#define keyExpSize 208
-#else
-#define Nk 4        // The number of 32 bit words in a key.
-#define KEYLEN 16   // Key length in bytes
-#define Nr 10       // The number of rounds in AES Cipher.
-#define keyExpSize 176
-#endif
 
 // jcallan@github points out that declaring Multiply as a function 
 // reduces code size considerably with the Keil ARM compiler.

@@ -1,11 +1,15 @@
+#define KEYLEN 16 
+#define IVLEN 16
+
 enclave {
     from "sgx_tstdc.edl" import *;
+	
     trusted {
         /* define ECALLs here. */
-		public void AES_ECB_encrypt([in, size=length] uint8_t *input, [in, size=16] uint8_t *key, [user_check]uint8_t *output,uint32_t length);
-		public void AES_ECB_decrypt([in, size=length] uint8_t* input, [in, size=16] uint8_t* key, [user_check]uint8_t *output,uint32_t length);
-		public void AES_CBC_encrypt_buffer([user_check]uint8_t* output, [in, size=length]uint8_t* input, uint32_t length, [in, size=16] uint8_t* key, [in, size=16] uint8_t* iv);
-		public void AES_CBC_decrypt_buffer([user_check]uint8_t* output, [in, size=length]uint8_t* input, uint32_t length, [in, size=16] uint8_t* key, [in, size=16] uint8_t* iv);
+		public void AES_ECB_encrypt([in, size=length] uint8_t *input, [in, size=KEYLEN] uint8_t *key, [user_check]uint8_t *output,uint32_t length);
+		public void AES_ECB_decrypt([in, size=length] uint8_t* input, [in, size=KEYLEN] uint8_t* key, [user_check]uint8_t *output,uint32_t length);
+		public void AES_CBC_encrypt_buffer([user_check]uint8_t* output, [in, size=length]uint8_t* input, uint32_t length, [in, size=KEYLEN] uint8_t* key, [in, size=IVLEN] uint8_t* iv);
+		public void AES_CBC_decrypt_buffer([user_check]uint8_t* output, [in, size=length]uint8_t* input, uint32_t length, [in, size=KEYLEN] uint8_t* key, [in, size=IVLEN] uint8_t* iv);
 
     };
 
