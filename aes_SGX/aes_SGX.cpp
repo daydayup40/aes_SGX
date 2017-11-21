@@ -257,7 +257,7 @@ static void KeyExpansion(void)
 static void AddRoundKey(uint8_t round)
 {
 	uint8_t i, j;
-	for (i = 0; i<4; ++i)
+	for (i = 0; i < 4; ++i)
 	{
 		for (j = 0; j < 4; ++j)
 		{
@@ -475,37 +475,48 @@ static void InvCipher(void)
 #if defined(ECB) && (ECB == 1)
 
 
-void AES_ECB_encrypt( uint8_t* input,  uint8_t* key, uint8_t* output,  uint32_t length)
+void AES_ECB_encrypt(uint8_t* input, uint8_t* key, uint8_t* output, uint32_t length)
 {
 	// Copy input to output, and work in-memory on output
 	memcpy(output, input, length);
+	size_t extra = length % 16;
 	Key = key;
 	KeyExpansion();
-	for (size_t i = 0; i <= length-16; i+=16)
+	for (size_t i = 0; i <= length - BLOCKLEN; i += BLOCKLEN)
 	{
-		state = (state_t*)(output+i);
+		state = (state_t*)(output);
+		Cipher();
+		output += BLOCKLEN;
+		input += BLOCKLEN;
+	}
+	if (extra)
+	{
+		memset(output, 0, BLOCKLEN);
+		memcpy(output, input, extra);
+		state = (state_t*)(output);
 		Cipher();
 	}
 
-	
-
-	
-
 	// The next function call encrypts the PlainText with the Key using AES algorithm.
-	
+
 }
 
-void AES_ECB_decrypt( uint8_t* input,  uint8_t* key, uint8_t *output,  uint32_t length)
+void AES_ECB_decrypt(uint8_t* input, uint8_t* key, uint8_t *output, uint32_t length)
 {
 	// Copy input to output, and work in-memory on output
+	if (length%BLOCKLEN)
+	{
+		return;
+	}
 	memcpy(output, input, length);
 	Key = key;
 	KeyExpansion();
-	for (size_t i = 0; i <= length-16; i += 16)
+	for (size_t i = 0; i < length; i += BLOCKLEN)
 	{
 		state = (state_t*)(output + i);
 		InvCipher();
 	}
+
 }
 
 
@@ -527,7 +538,7 @@ static void XorWithIv(uint8_t* buf)
 	}
 }
 
-void AES_CBC_encrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length,  uint8_t* key,  uint8_t* iv)
+void AES_CBC_encrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length, uint8_t* key, uint8_t* iv)
 {
 	uintptr_t i;
 	uint8_t extra = length % BLOCKLEN; /* Remaining bytes in the last non-full block */
@@ -544,7 +555,7 @@ void AES_CBC_encrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length,  u
 		Iv = (uint8_t*)iv;
 	}
 
-	for (i = 0; i < length; i += BLOCKLEN)
+	for (i = 0; i <= length - BLOCKLEN; i += BLOCKLEN)
 	{
 		memcpy(output, input, BLOCKLEN);
 		XorWithIv(output);
@@ -566,7 +577,7 @@ void AES_CBC_encrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length,  u
 	}
 }
 
-void AES_CBC_decrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length,  uint8_t* key,  uint8_t* iv)
+void AES_CBC_decrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length, uint8_t* key, uint8_t* iv)
 {
 	uintptr_t i;
 	uint8_t extra = length % BLOCKLEN; /* Remaining bytes in the last non-full block */
@@ -584,7 +595,7 @@ void AES_CBC_decrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length,  u
 		Iv = (uint8_t*)iv;
 	}
 
-	for (i = 0; i < length; i += BLOCKLEN)
+	for (i = 0; i <= length - BLOCKLEN; i += BLOCKLEN)
 	{
 		memcpy(output, input, BLOCKLEN);
 		state = (state_t*)output;

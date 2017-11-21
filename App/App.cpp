@@ -19,6 +19,7 @@ int updated;
 
 bool initializeEnclave()
 {
+
 	if (sgx_create_enclave(ENCLAVE_FILE, SGX_DEBUG_FLAG, &token, &updated,
 		&enclaveId, NULL) != SGX_SUCCESS)
 		//printf("Error %#x: cannot create enclave\n", ret);
@@ -44,7 +45,7 @@ void printHex(uint8_t* data, size_t len)
 		{
 			printf("%2x", data[i]);
 		}
-		
+
 	}
 	printf("\n");
 }
@@ -63,7 +64,7 @@ void testAESEBC()
 	printf("text : ");
 	printHex(plain_text, 64);
 	uint8_t buf[64], buf2[64];
-	AES_ECB_encrypt(enclaveId, plain_text, key, buf, 64);
+	AES_ECB_encrypt(enclaveId, plain_text, key, buf, 54);
 	printf("encrypted text : ");
 	printHex(buf, 64);
 	AES_ECB_decrypt(enclaveId, buf, key, buf2, 64);
@@ -84,10 +85,10 @@ void testAESCBC()
 	printf("text : ");
 	printHex(plain_text, 64);
 	uint8_t buf[64], buf2[64];
-	AES_CBC_encrypt_buffer(enclaveId, buf, plain_text, 64, key, iv);
+	AES_CBC_encrypt_buffer(enclaveId, buf, plain_text, 54, key, iv);
 	printf("encrypted text : ");
 	printHex(buf, 64);
-	AES_CBC_decrypt_buffer(enclaveId, buf2, buf, 64, key,iv);
+	AES_CBC_decrypt_buffer(enclaveId, buf2, buf, 64, key, iv);
 	printf("decrypted text : ");
 	printHex(buf2, 64);
 }
@@ -111,6 +112,6 @@ int main()
 	}
 	printf("hahaha\n");
 	system("pause");
-    return 0;
+	return 0;
 }
 

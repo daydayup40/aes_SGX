@@ -90,16 +90,13 @@ static sgx_status_t SGX_CDECL sgx_AES_ECB_encrypt(void* pms)
 	size_t _len_input = _tmp_length;
 	uint8_t* _in_input = NULL;
 	uint8_t* _tmp_key = ms->ms_key;
-	size_t _len_key = sizeof(*_tmp_key);
+	size_t _len_key = 16;
 	uint8_t* _in_key = NULL;
 	uint8_t* _tmp_output = ms->ms_output;
-	size_t _len_output = _tmp_length;
-	uint8_t* _in_output = NULL;
 
 	CHECK_REF_POINTER(pms, sizeof(ms_AES_ECB_encrypt_t));
 	CHECK_UNIQUE_POINTER(_tmp_input, _len_input);
 	CHECK_UNIQUE_POINTER(_tmp_key, _len_key);
-	CHECK_UNIQUE_POINTER(_tmp_output, _len_output);
 
 	if (_tmp_input != NULL) {
 		_in_input = (uint8_t*)malloc(_len_input);
@@ -119,22 +116,10 @@ static sgx_status_t SGX_CDECL sgx_AES_ECB_encrypt(void* pms)
 
 		memcpy(_in_key, _tmp_key, _len_key);
 	}
-	if (_tmp_output != NULL) {
-		if ((_in_output = (uint8_t*)malloc(_len_output)) == NULL) {
-			status = SGX_ERROR_OUT_OF_MEMORY;
-			goto err;
-		}
-
-		memset((void*)_in_output, 0, _len_output);
-	}
-	AES_ECB_encrypt(_in_input, _in_key, _in_output, _tmp_length);
+	AES_ECB_encrypt(_in_input, _in_key, _tmp_output, _tmp_length);
 err:
 	if (_in_input) free(_in_input);
 	if (_in_key) free(_in_key);
-	if (_in_output) {
-		memcpy(_tmp_output, _in_output, _len_output);
-		free(_in_output);
-	}
 
 	return status;
 }
@@ -148,16 +133,13 @@ static sgx_status_t SGX_CDECL sgx_AES_ECB_decrypt(void* pms)
 	size_t _len_input = _tmp_length;
 	uint8_t* _in_input = NULL;
 	uint8_t* _tmp_key = ms->ms_key;
-	size_t _len_key = sizeof(*_tmp_key);
+	size_t _len_key = 16;
 	uint8_t* _in_key = NULL;
 	uint8_t* _tmp_output = ms->ms_output;
-	size_t _len_output = _tmp_length;
-	uint8_t* _in_output = NULL;
 
 	CHECK_REF_POINTER(pms, sizeof(ms_AES_ECB_decrypt_t));
 	CHECK_UNIQUE_POINTER(_tmp_input, _len_input);
 	CHECK_UNIQUE_POINTER(_tmp_key, _len_key);
-	CHECK_UNIQUE_POINTER(_tmp_output, _len_output);
 
 	if (_tmp_input != NULL) {
 		_in_input = (uint8_t*)malloc(_len_input);
@@ -177,22 +159,10 @@ static sgx_status_t SGX_CDECL sgx_AES_ECB_decrypt(void* pms)
 
 		memcpy(_in_key, _tmp_key, _len_key);
 	}
-	if (_tmp_output != NULL) {
-		if ((_in_output = (uint8_t*)malloc(_len_output)) == NULL) {
-			status = SGX_ERROR_OUT_OF_MEMORY;
-			goto err;
-		}
-
-		memset((void*)_in_output, 0, _len_output);
-	}
-	AES_ECB_decrypt(_in_input, _in_key, _in_output, _tmp_length);
+	AES_ECB_decrypt(_in_input, _in_key, _tmp_output, _tmp_length);
 err:
 	if (_in_input) free(_in_input);
 	if (_in_key) free(_in_key);
-	if (_in_output) {
-		memcpy(_tmp_output, _in_output, _len_output);
-		free(_in_output);
-	}
 
 	return status;
 }
@@ -202,10 +172,8 @@ static sgx_status_t SGX_CDECL sgx_AES_CBC_encrypt_buffer(void* pms)
 	ms_AES_CBC_encrypt_buffer_t* ms = SGX_CAST(ms_AES_CBC_encrypt_buffer_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
 	uint8_t* _tmp_output = ms->ms_output;
-	uint32_t _tmp_length = ms->ms_length;
-	size_t _len_output = _tmp_length;
-	uint8_t* _in_output = NULL;
 	uint8_t* _tmp_input = ms->ms_input;
+	uint32_t _tmp_length = ms->ms_length;
 	size_t _len_input = _tmp_length;
 	uint8_t* _in_input = NULL;
 	uint8_t* _tmp_key = ms->ms_key;
@@ -216,19 +184,10 @@ static sgx_status_t SGX_CDECL sgx_AES_CBC_encrypt_buffer(void* pms)
 	uint8_t* _in_iv = NULL;
 
 	CHECK_REF_POINTER(pms, sizeof(ms_AES_CBC_encrypt_buffer_t));
-	CHECK_UNIQUE_POINTER(_tmp_output, _len_output);
 	CHECK_UNIQUE_POINTER(_tmp_input, _len_input);
 	CHECK_UNIQUE_POINTER(_tmp_key, _len_key);
 	CHECK_UNIQUE_POINTER(_tmp_iv, _len_iv);
 
-	if (_tmp_output != NULL) {
-		if ((_in_output = (uint8_t*)malloc(_len_output)) == NULL) {
-			status = SGX_ERROR_OUT_OF_MEMORY;
-			goto err;
-		}
-
-		memset((void*)_in_output, 0, _len_output);
-	}
 	if (_tmp_input != NULL) {
 		_in_input = (uint8_t*)malloc(_len_input);
 		if (_in_input == NULL) {
@@ -256,12 +215,8 @@ static sgx_status_t SGX_CDECL sgx_AES_CBC_encrypt_buffer(void* pms)
 
 		memcpy(_in_iv, _tmp_iv, _len_iv);
 	}
-	AES_CBC_encrypt_buffer(_in_output, _in_input, _tmp_length, _in_key, _in_iv);
+	AES_CBC_encrypt_buffer(_tmp_output, _in_input, _tmp_length, _in_key, _in_iv);
 err:
-	if (_in_output) {
-		memcpy(_tmp_output, _in_output, _len_output);
-		free(_in_output);
-	}
 	if (_in_input) free(_in_input);
 	if (_in_key) free(_in_key);
 	if (_in_iv) free(_in_iv);
@@ -274,10 +229,8 @@ static sgx_status_t SGX_CDECL sgx_AES_CBC_decrypt_buffer(void* pms)
 	ms_AES_CBC_decrypt_buffer_t* ms = SGX_CAST(ms_AES_CBC_decrypt_buffer_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
 	uint8_t* _tmp_output = ms->ms_output;
-	uint32_t _tmp_length = ms->ms_length;
-	size_t _len_output = _tmp_length;
-	uint8_t* _in_output = NULL;
 	uint8_t* _tmp_input = ms->ms_input;
+	uint32_t _tmp_length = ms->ms_length;
 	size_t _len_input = _tmp_length;
 	uint8_t* _in_input = NULL;
 	uint8_t* _tmp_key = ms->ms_key;
@@ -288,19 +241,10 @@ static sgx_status_t SGX_CDECL sgx_AES_CBC_decrypt_buffer(void* pms)
 	uint8_t* _in_iv = NULL;
 
 	CHECK_REF_POINTER(pms, sizeof(ms_AES_CBC_decrypt_buffer_t));
-	CHECK_UNIQUE_POINTER(_tmp_output, _len_output);
 	CHECK_UNIQUE_POINTER(_tmp_input, _len_input);
 	CHECK_UNIQUE_POINTER(_tmp_key, _len_key);
 	CHECK_UNIQUE_POINTER(_tmp_iv, _len_iv);
 
-	if (_tmp_output != NULL) {
-		if ((_in_output = (uint8_t*)malloc(_len_output)) == NULL) {
-			status = SGX_ERROR_OUT_OF_MEMORY;
-			goto err;
-		}
-
-		memset((void*)_in_output, 0, _len_output);
-	}
 	if (_tmp_input != NULL) {
 		_in_input = (uint8_t*)malloc(_len_input);
 		if (_in_input == NULL) {
@@ -328,12 +272,8 @@ static sgx_status_t SGX_CDECL sgx_AES_CBC_decrypt_buffer(void* pms)
 
 		memcpy(_in_iv, _tmp_iv, _len_iv);
 	}
-	AES_CBC_decrypt_buffer(_in_output, _in_input, _tmp_length, _in_key, _in_iv);
+	AES_CBC_decrypt_buffer(_tmp_output, _in_input, _tmp_length, _in_key, _in_iv);
 err:
-	if (_in_output) {
-		memcpy(_tmp_output, _in_output, _len_output);
-		free(_in_output);
-	}
 	if (_in_input) free(_in_input);
 	if (_in_key) free(_in_key);
 	if (_in_iv) free(_in_iv);
